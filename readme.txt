@@ -3,7 +3,7 @@ Contributors: seventhqueen
 Tags: BuddyPress, avatar, cover, members
 Requires at least: 4.1
 Tested up to: 4.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,9 @@ No. This plugin needs no configuration.
 
 
 == Changelog ==
+
+= 1.0.5 =
+- Fixed translations
 
 = 1.0.4 =
 - Allow admin to set covers for members

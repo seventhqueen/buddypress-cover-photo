@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: BuddyPress Cover Photo
- * Version:1.0.4
+ * Version:1.0.5
  * Author: SeventhQueen
  * Author URI: http://seventhqueen.com
  * Plugin URI: http://seventhqueen.com
@@ -14,10 +14,8 @@ class BPCoverPhoto {
 
     function __construct() {
 
-        //load textdomain
-        add_action('bp_loaded', array($this, 'load_textdomain'), 2);
         //setup nav
-        add_action('bp_xprofile_setup_nav', array($this, 'setup_nav'));
+        add_action( 'bp_xprofile_setup_nav', array( $this, 'setup_nav' ) );
 
         add_action( 'bp_before_member_header', array( $this, 'add_profile_cover' ), 20 );
 
@@ -26,7 +24,7 @@ class BPCoverPhoto {
 
         //add css for background change
         add_action( 'wp_head', array( $this, 'inject_css' ));
-        add_action('wp_print_scripts', array($this, 'inject_js'));
+        add_action( 'wp_print_scripts', array( $this, 'inject_js' ) );
         add_action( 'wp_ajax_bpcp_delete_cover', array( $this, 'ajax_delete_current_cover' ) );
 
     }
@@ -60,11 +58,6 @@ class BPCoverPhoto {
 
         echo $output;
 
-    }
-
-    //translation
-    function load_textdomain() {
-        load_plugin_textdomain('bpcp', false, dirname(plugin_basename(__FILE__)) . "/languages/");
     }
 
     //add a sub nav to My profile for adding cover
@@ -367,10 +360,16 @@ function bpcp_get_image_position( $user_id = false ){
 }
 
 
-add_action( 'init', 'sq_bp_cover_photo_init' );
+add_action( 'bp_include', 'sq_bp_cover_photo_init' );
 function sq_bp_cover_photo_init()
 {
     if ( function_exists( 'bp_is_active' ) ) {
         $bp_cover_photo = new BPCoverPhoto();
     }
+}
+
+//load textdomain
+add_action( 'plugins_loaded', 'kleo_bpcp_load_textdomain' );
+function kleo_bpcp_load_textdomain() {
+    load_plugin_textdomain( 'bpcp', false, dirname(plugin_basename(__FILE__)) . "/languages/" );
 }
