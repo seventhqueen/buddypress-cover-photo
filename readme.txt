@@ -12,7 +12,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Enable your site users to add beautiful profile photo covers to their page. 
 Admin user also can set covers for other users by visiting their profile. 
 
-Next version will enable group covers also. 
+NEW: Version 1.1 is out and we added Groups covers and Default cover setting
 
 Check out this demo to see it in action: 
 http://seventhqueen.com/themes/kleo/members/kleoadmin/
