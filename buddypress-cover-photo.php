@@ -1,246 +1,41 @@
 <?php
 /**
  * Plugin Name: BuddyPress Cover Photo
- * Version:1.0.5
+ * Version: 1.1
  * Author: SeventhQueen
  * Author URI: http://seventhqueen.com
  * Plugin URI: http://seventhqueen.com
+ * Inspired by Brajesh Singh - https://github.com/sbrajesh/bp-custom-background-for-user-profile
  * License: GPL 
  * 
- * Description: Allows Users to upload Cover photo to their profiles
+ * Description: Allows Users to upload Cover photo to their profiles and to Groups
  */
 
-class BPCoverPhoto {
+add_action( 'bp_include', 'sq_bp_cover_photo_init' );
+function sq_bp_cover_photo_init()
+{
+    if ( function_exists( 'bp_is_active' ) ) {
+        include_once 'profile-cover.php';
+        include_once 'group-cover.php';
 
-    function __construct() {
-
-        //setup nav
-        add_action( 'bp_xprofile_setup_nav', array( $this, 'setup_nav' ) );
-
-        add_action( 'bp_before_member_header', array( $this, 'add_profile_cover' ), 20 );
-
-        //inject custom css class to body
-        add_filter( 'body_class', array( $this, 'get_body_class' ), 30 );
-
-        //add css for background change
-        add_action( 'wp_head', array( $this, 'inject_css' ));
-        add_action( 'wp_print_scripts', array( $this, 'inject_js' ) );
-        add_action( 'wp_ajax_bpcp_delete_cover', array( $this, 'ajax_delete_current_cover' ) );
-
+        $bp_cover_photo = new BPCoverPhoto();
     }
+}
 
-    //inject custom class for profile pages
-    function get_body_class($classes){
-        if( bp_is_user() && bpcp_get_image() ) {
-            $classes[] = 'is-user-profile';
-        }
-        return $classes;
-    }
+//load textdomain
+add_action( 'plugins_loaded', 'kleo_bpcp_load_textdomain' );
+function kleo_bpcp_load_textdomain() {
+    load_plugin_textdomain( 'bpcp', false, dirname(plugin_basename(__FILE__)) . "/languages/" );
+}
 
-    function add_profile_cover () {
+/**
+ * Class BPCP_Utils
+ * Some Upload file utils used in the plugin
+ */
+Class BPCP_Utils {
 
-        $output = '';
-
-        if ( bp_is_my_profile() || is_super_admin() ) {
-            if ( bpcp_get_image() ) {
-                $message = __("Change Cover", 'bpcp');
-            } else {
-                $message = __("Add Cover", 'bpcp');
-            }
-
-            $output .= '<div class="profile-cover-action">';
-            $output .= '<a href="' . bp_displayed_user_domain() . 'profile/change-cover/" class="button">' . $message . '</a>';
-            $output .= '</div>';
-        }
-        if ( bpcp_get_image() ) {
-            $output .= '<div class="profile-cover-inner"></div>';
-        }
-
-        echo $output;
-
-    }
-
-    //add a sub nav to My profile for adding cover
-    function setup_nav() {
-        global $bp;
-        $profile_link = bp_loggedin_user_domain() . $bp->profile->slug . '/';
-        bp_core_new_subnav_item(
-            array(
-                'name' => __('Change Cover', 'bpcp'),
-                'slug' => 'change-cover',
-                'parent_url' => $profile_link,
-                'parent_slug' => $bp->profile->slug,
-                'screen_function' => array($this, 'screen_change_cover'),
-                'user_has_access' => (bp_is_my_profile() || is_super_admin()),
-                'position' => 40
-            )
-        );
-
-    }
-
-    //screen function
-    function screen_change_cover() {
-        global $bp;
-        //if the form was submitted, update here
-        if (!empty($_POST['bpcp_save_submit'])) {
-            if (!wp_verify_nonce($_POST['_wpnonce'], 'bp_upload_profile_cover')) {
-                die(__('Security check failed', 'bpcp'));
-            }
-
-            $current_option = $_POST['cover_pos'];
-            $allowed_options = array('center', 'bottom', 'top');
-
-            if( in_array( $current_option, $allowed_options ) ) {
-                $user_id = bp_loggedin_user_id();
-                if ( is_super_admin() && ! bp_is_my_profile() ) {
-                    $user_id = bp_displayed_user_id();
-                }
-
-                bp_update_user_meta( $user_id, 'profile_cover_pos', $current_option );
-            }
-
-            //handle the upload
-            if ($this->handle_upload()) {
-                bp_core_add_message(__('Cover photo uploaded successfully!', 'bpcp'));
-                @setcookie( 'bp-message', false, time() - 1000, COOKIEPATH );
-            }
-        }
-
-        //hook the content
-        add_action('bp_template_title', array($this, 'page_title'));
-        add_action('bp_template_content', array($this, 'page_content'));
-        bp_core_load_template(apply_filters('bp_core_template_plugin', 'members/single/plugins'));
-    }
-
-    //Change Cover Page title
-    function page_title() {
-        echo __('Add/Update Your Profile Cover Image', 'bpcp');
-    }
-
-    //Upload page content
-    function page_content() {
-        ?>
-
-        <form name="bpcp_change" id="bpcp_change" method="post" class="standard-form" enctype="multipart/form-data">
-
-            <?php
-            $image_url = bpcp_get_image();
-            if ( ! empty( $image_url ) ): ?>
-                <div id="bg-delete-wrapper">
-
-                    <div class="current-cover">
-                        <img src="<?php echo $image_url; ?>" alt="current cover photo"/>
-                    </div>
-                    <br>
-                    <a href='#' id='bpcp-del-image' data-buid="<?php echo bp_displayed_user_id();?>" class='btn btn-default btn-xs'><?php _e('Delete', 'bpcp'); ?></a>
-                </div>
-            <?php endif; ?>
-
-            <p><?php _e('If you want to change your profile cover, please upload a new image.', 'bpcp'); ?></p>
-            <label for="bpcp_upload">
-                <input type="file" name="file" id="bpcp_upload" class="settings-input"/>
-            </label>
-
-            <h3 style="padding-bottom:0px;margin-top: 20px;">
-                <?php _e("Please choose your background repeat option", "bpcp");?>
-            </h3>
-
-            <div style="clear:both;">
-                <?php
-
-                $selected = bpcp_get_image_position();
-                $cover_options = array('center' => 'Center', 'top' => 'Top', 'bottom' => "Bottom");
-
-                foreach( $cover_options as $key => $label ):
-                    ?>
-                    <label class="radio">
-                        <input type="radio" name="cover_pos" id="cover_pos<?php echo $key; ?>" value="<?php echo $key; ?>" <?php echo checked($key,$selected); ?>> <?php echo $label;?>
-                    </label>
-                <?php
-                endforeach;
-
-                ?>
-            </div>
-            
-            <br/>
-            <br/>
-
-            <?php wp_nonce_field("bp_upload_profile_cover"); ?>
-            <input type="hidden" name="action" id="action" value="bp_upload_profile_cover"/>
-
-            <p class="submit">
-                <input type="submit" id="bpcp_save_submit" name="bpcp_save_submit" class="button" value="<?php _e('Save', 'bpcp') ?>"/>
-            </p>
-        </form>
-    <?php
-    }
-
-    //handles upload, a modified version of bp_core_avatar_handle_upload(from bp-core/bp-core-avatars.php)
-    function handle_upload() {
-
-        //include core files
-        require_once(ABSPATH . '/wp-admin/includes/file.php');
-        $max_upload_size = $this->get_max_upload_size();
-        $max_upload_size = $max_upload_size * 1024;//convert kb to bytes
-        $file = $_FILES;
-
-        //I am not changing the domain of erro messages as these are same as bp, so you should have a translation for this
-        $uploadErrors = array(
-            0 => __('There is no error, the file uploaded with success', 'buddypress'),
-            1 => __('Your image was bigger than the maximum allowed file size of: ', 'buddypress') . size_format($max_upload_size),
-            2 => __('Your image was bigger than the maximum allowed file size of: ', 'buddypress') . size_format($max_upload_size),
-            3 => __('The uploaded file was only partially uploaded', 'buddypress'),
-            4 => __('No file was uploaded', 'buddypress'),
-            6 => __('Missing a temporary folder', 'buddypress')
-        );
-
-        if (isset($file['error']) && $file['error']) {
-            bp_core_add_message(sprintf(__('Your upload failed, please try again. Error was: %s', 'buddypress'), $uploadErrors[$file['file']['error']]), 'error');
-            return false;
-        }
-
-        if (!($file['file']['size'] < $max_upload_size)) {
-            bp_core_add_message(sprintf(__('The file you uploaded is too big. Please upload a file under %s', 'buddypress'), size_format($max_upload_size)), 'error');
-            return false;
-        }
-
-        if ((!empty($file['file']['type']) && !preg_match('/(jpe?g|gif|png)$/i', $file['file']['type'])) || !preg_match('/(jpe?g|gif|png)$/i', $file['file']['name'])) {
-            bp_core_add_message(__('Please upload only JPG, GIF or PNG photos.', 'buddypress'), 'error');
-            return false;
-        }
-
-        $uploaded_file = wp_handle_upload($file['file'], array('action' => 'bp_upload_profile_cover'));
-
-        //if file was not uploaded correctly
-        if (!empty($uploaded_file['error'])) {
-            bp_core_add_message(sprintf(__('Upload Failed! Error was: %s', 'buddypress'), $uploaded_file['error']), 'error');
-            return false;
-        }
-
-        $user_id = bp_loggedin_user_id();
-        if ( is_super_admin() && ! bp_is_my_profile() ) {
-            $user_id = bp_displayed_user_id();
-        }
-
-        //assume that the file uploaded successfully
-        //delete any previous uploaded image
-        self::delete_cover_for_user( $user_id );
-
-        //save in user_meta
-        bp_update_user_meta( $user_id, 'profile_cover', $uploaded_file['url'] );
-        bp_update_user_meta( $user_id, 'profile_cover_file_path', $uploaded_file['file'] );
-
-        @setcookie( 'bp-message', false, time() - 1000, COOKIEPATH );
-        
-        do_action('bpcp_cover_uploaded', $uploaded_file['url']);//allow to do some other actions when a new background is uploaded
-        return true;
-
-    }
-
-    //get the allowed upload size
-    //there is no setting on single wp, on multisite, there is a setting, we will adhere to both
-    function get_max_upload_size() {
-        $max_file_sizein_kb = get_site_option('fileupload_maxk');//it wil be empty for standard wordpress
+    public static function get_max_upload_size() {
+        $max_file_sizein_kb = get_site_option('fileupload_maxk');//it wil be empty for standard WordPress
 
 
         if (empty($max_file_sizein_kb)) {//check for the server limit since we are on single wp
@@ -253,123 +48,247 @@ class BPCoverPhoto {
         }
         return apply_filters('bpcp_max_upload_size', $max_file_sizein_kb);
 
-
     }
 
-    //inject css
-    function inject_css() {
-        $image_url = bpcp_get_image();
-        if (empty($image_url) || apply_filters('bpcp_iwilldo_it_myself', false)) {
-            return;
+    //handles upload, a modified version of bp_core_avatar_handle_upload(from bp-core/bp-core-avatars.php)
+    public static function handle_upload( $name = 'file', $action = 'bp_upload_profile_cover' )
+    {
+
+        //include core files
+        require_once(ABSPATH . '/wp-admin/includes/file.php');
+        $max_upload_size = self::get_max_upload_size();
+        $max_upload_size = $max_upload_size * 1024;//convert kb to bytes
+        $file = $_FILES;
+
+        //I am not changing the domain of error messages as these are same as bp, so you should have a translation for this
+        $uploadErrors = array(
+            0 => __('There is no error, the file uploaded with success', 'buddypress'),
+            1 => __('Your image was bigger than the maximum allowed file size of: ', 'buddypress') . size_format($max_upload_size),
+            2 => __('Your image was bigger than the maximum allowed file size of: ', 'buddypress') . size_format($max_upload_size),
+            3 => __('The uploaded file was only partially uploaded', 'buddypress'),
+            4 => __('No file was uploaded', 'buddypress'),
+            6 => __('Missing a temporary folder', 'buddypress')
+        );
+
+        if (isset($file['error']) && $file['error']) {
+            bp_core_add_message(sprintf(__('Your upload failed, please try again. Error was: %s', 'buddypress'), $uploadErrors[$file[$name]['error']]), 'error');
+            return false;
         }
-        $position = bpcp_get_image_position();
 
-        ?>
-        <style type="text/css">
-            body.buddypress.is-user-profile div#item-header {
-                background-image: url("<?php echo $image_url;?>");
-                background-repeat: no-repeat;
-                background-size: cover;
-                background-position: <?php echo $position;?>;
-            }
-        </style>
-    <?php
+        if (!($file[$name]['size'] < $max_upload_size)) {
+            bp_core_add_message(sprintf(__('The file you uploaded is too big. Please upload a file under %s', 'buddypress'), size_format($max_upload_size)), 'error');
+            return false;
+        }
 
+        if ((!empty($file[$name]['type']) && !preg_match('/(jpe?g|gif|png)$/i', $file[$name]['type'])) || !preg_match('/(jpe?g|gif|png)$/i', $file[$name]['name'])) {
+            bp_core_add_message(__('Please upload only JPG, GIF or PNG photos.', 'buddypress'), 'error');
+            return false;
+        }
+
+        return wp_handle_upload( $file[$name], array( 'action' => $action, 'test_form' => FALSE ) );
     }
 
-    //inject js if I am viewing my own profile
-    function inject_js() {
-        if ( ( bp_is_my_profile() || is_super_admin() ) && bp_is_profile_component() && bp_is_current_action( 'change-cover' ) ) {
-            wp_enqueue_script('bpcp-js', plugin_dir_url(__FILE__) . 'bpcp.js', array('jquery'));
-        }
-    }
-
-    //ajax delete the existing image
-
-    function ajax_delete_current_cover() {
-        //validate nonce
-        if (!wp_verify_nonce($_POST['_wpnonce'], "bp_upload_profile_cover")) {
-            die('what!');
-        }
-
-        $user_id = bp_loggedin_user_id();
-        if ( isset( $_POST['buid'] ) && (int)$_POST['buid'] != 0 ) {
-            if ( bp_loggedin_user_id() != (int)$_POST['buid'] && is_super_admin() ) {
-                $user_id = (int)$_POST['buid'];
-            }
-        }
-
-        self::delete_cover_for_user( $user_id );
-
-        $message = '<p>' . __('Cover photo deleted successfully!', 'bpcp') . '</p>';//feedback but we don't do anything with it yet, should we do something
-        echo $message;
-        exit(0);
-
-    }
-
-    //reuse it
-    function delete_cover_for_user( $user_id = null ) {
-
-        if ( ! $user_id ) {
-            $user_id = bp_loggedin_user_id();
-        }
-
-        //delete the associated image and send a message
-        $old_file_path = get_user_meta( $user_id, 'profile_cover_file_path', true );
-        if ($old_file_path) {
-            @unlink( $old_file_path );//remove old files with each new upload
-        }
-        bp_delete_user_meta( $user_id, 'profile_cover_file_path' );
-        bp_delete_user_meta( $user_id, 'profile_cover' );
-    }
 }
 
 
 /**
- *
- * @param integer $user_id
- * @return string url of the image associated with current user or false
+ * Your setting main function
  */
+function bp_plugin_admin_settings() {
 
-function bpcp_get_image( $user_id = false ){
-    if( ! $user_id ) {
-        $user_id = bp_displayed_user_id();
-    }
-    
-     if( empty( $user_id ) ) {
-         return false;
-     }
-     $image_url = bp_get_user_meta( $user_id, 'profile_cover', true );
-     return apply_filters( 'bpcp_get_image', $image_url, $user_id );
+    /* This is how you add a new section to BuddyPress settings */
+    add_settings_section(
+    /* the id of your new section */
+        'bpcp_section',
+
+        /* the title of your section */
+        __( 'Cover Photo Settings',  'bpcp' ),
+
+        /* the display function for your section's description */
+        'bpcp_setting_callback_section',
+
+        /* BuddyPress settings */
+        'buddypress'
+    );
+
+    /* Default Profile cover field */
+    add_settings_field(
+    /* the option name you want to use for your plugin */
+        'bpcp-profile-default',
+
+        /* The title for your setting */
+        __( 'Default Profile Cover', 'bpcp' ),
+
+        /* Display function */
+        'bpcp_profile_field_callback',
+
+        /* BuddyPress settings */
+        'buddypress',
+
+        /* Your plugins section id */
+        'bpcp_section'
+    );
+
+    /*
+       Register Profile default field setting
+    */
+    register_setting(
+    /* BuddyPress settings */
+        'buddypress',
+
+        /* the option name you want to use for your plugin */
+        'bpcp-profile-default',
+
+        /* the validation function you use before saving your option to the database */
+        'strval'
+    );
+
+    /* Default Group cover field */
+    add_settings_field(
+    /* the option name you want to use for your plugin */
+        'bpcp-group-default',
+
+        /* The title for your setting */
+        __( 'Default Group Cover', 'bpcp' ),
+
+        /* Display function */
+        'bpcp_group_field_callback',
+
+        /* BuddyPress settings */
+        'buddypress',
+
+        /* Your plugins section id */
+        'bpcp_section'
+    );
+
+    /*
+       Register Group default field setting
+    */
+    register_setting(
+    /* BuddyPress settings */
+        'buddypress',
+
+        /* the option name you want to use for your plugin */
+        'bpcp-group-default',
+
+        /* the validation function you use before saving your option to the database */
+        'strval'
+    );
+
 }
-function bpcp_get_image_position( $user_id = false ){
-    if( !$user_id ) {
-        $user_id = bp_displayed_user_id();
-    }
-    if( empty( $user_id ) ) {
-        return false;
-    }
 
-    $current_position = bp_get_user_meta( $user_id, 'profile_cover_pos', true);
+/**
+ * You need to hook bp_register_admin_settings to register your settings
+ */
+add_action( 'bp_register_admin_settings', 'bp_plugin_admin_settings' );
 
-    if( ! $current_position ) {
-        $current_position = 'center';
-    }
-
-    return $current_position;
+/**
+ * This is the display function for your section's description
+ */
+function bpcp_setting_callback_section() {
+    ?>
+    <p class="description"><?php _e( 'Define a default profile or group cover image', 'bpcp' );?></p>
+<?php
 }
 
 
-add_action( 'bp_include', 'sq_bp_cover_photo_init' );
-function sq_bp_cover_photo_init()
-{
-    if ( function_exists( 'bp_is_active' ) ) {
-        $bp_cover_photo = new BPCoverPhoto();
+/**
+ * This is the display function for profile default cover
+ */
+function bpcp_profile_field_callback() {
+
+    /* if you use bp_get_option(), then you are sure to get the option for the blog BuddyPress is activated on */
+    $bp_plugin_option_value = bp_get_option( 'bpcp-profile-default' );
+
+    if (! $bp_plugin_option_value ) {
+        $bp_plugin_option_value = '';
     }
+
+    // jQuery
+    wp_enqueue_script('jquery');
+    // This will enqueue the Media Uploader script
+    wp_enqueue_media();
+    ?>
+
+    <div>
+        <input type="text" name="bpcp-profile-default" id="bpcp-profile-default" value="<?php echo $bp_plugin_option_value; ?>" class="regular-text">
+        <input type="button" name="upload-btn" id="upload-btn2" class="button-secondary" value="Upload Image">
+    </div>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function($){
+            $('#upload-btn2').click(function(e) {
+                e.preventDefault();
+                var image = wp.media({
+                    title: 'Upload Image',
+                    // mutiple: true if you want to upload multiple files at once
+                    multiple: false
+                }).open()
+                    .on('select', function(e){
+                        // This will return the selected image from the Media Uploader, the result is an object
+                        var uploaded_image = image.state().get('selection').first();
+                        // We convert uploaded_image to a JSON object to make accessing it easier
+                        // Output to the console uploaded_image
+                        //console.log(uploaded_image);
+                        var image_url = uploaded_image.toJSON().url;
+                        // Let's assign the url value to the input field
+                        $('#bpcp-profile-default').val(image_url);
+                    });
+            });
+        });
+    </script>
+
+
+<?php
 }
 
-//load textdomain
-add_action( 'plugins_loaded', 'kleo_bpcp_load_textdomain' );
-function kleo_bpcp_load_textdomain() {
-    load_plugin_textdomain( 'bpcp', false, dirname(plugin_basename(__FILE__)) . "/languages/" );
+
+/**
+ * This is the display function for your field
+ */
+function bpcp_group_field_callback() {
+
+    /* if you use bp_get_option(), then you are sure to get the option for the blog BuddyPress is activated on */
+    $bp_plugin_option_value = bp_get_option( 'bpcp-group-default' );
+
+    if (! $bp_plugin_option_value ) {
+        $bp_plugin_option_value = '';
+    }
+
+    // jQuery
+    wp_enqueue_script('jquery');
+    // This will enqueue the Media Uploader script
+    wp_enqueue_media();
+    ?>
+
+    <div>
+        <input type="text" name="bpcp-group-default" id="bpcp-group-default" value="<?php echo $bp_plugin_option_value; ?>" class="regular-text">
+        <input type="button" name="upload-btn" id="upload-btn" class="button-secondary" value="Upload Image">
+    </div>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function($){
+            $('#upload-btn').click(function(e) {
+                e.preventDefault();
+                var image = wp.media({
+                    title: 'Upload Image',
+                    // mutiple: true if you want to upload multiple files at once
+                    multiple: false
+                }).open()
+                    .on('select', function(e){
+                        // This will return the selected image from the Media Uploader, the result is an object
+                        var uploaded_image = image.state().get('selection').first();
+                        // We convert uploaded_image to a JSON object to make accessing it easier
+                        // Output to the console uploaded_image
+                        //console.log(uploaded_image);
+                        var image_url = uploaded_image.toJSON().url;
+                        // Let's assign the url value to the input field
+                        $('#bpcp-group-default').val(image_url);
+                    });
+            });
+        });
+    </script>
+
+
+<?php
 }
