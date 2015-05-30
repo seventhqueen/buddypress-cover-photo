@@ -1,9 +1,9 @@
 === BuddyPress Cover Photo ===
 Contributors: seventhqueen
 Tags: BuddyPress, avatar, cover, members
-Requires at least: 4.1
-Tested up to: 4.1
-Stable tag: 1.0.5
+Requires at least: 4.0
+Tested up to: 4.2
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,10 @@ No. This plugin needs no configuration.
 
 
 == Changelog ==
+
+= 1.1 =
+- Added Group cover
+- Added settings for default profile and group covers in Settings - BuddyPress - Settings screen
 
 = 1.0.5 =
 - Fixed translations
