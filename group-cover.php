@@ -111,9 +111,10 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
             /* Default cover check */
             $default_cover = bp_get_option( 'bpcp-group-default' );
             if ( $this->group_id > 0 && $default_cover ) {
+                $group_cover_html_tag = apply_filters( 'bpcp_group_tag', 'div#item-header' );
                 ?>
                 <style type="text/css">
-                    body.buddypress.bp-default-cover div#item-header {
+                    body.buddypress.bp-default-cover <?php echo $group_cover_html_tag; ?> {
                         background-image: url("<?php echo $default_cover; ?>");
                         background-repeat: no-repeat;
                         background-size: cover;
@@ -234,7 +235,9 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
                 ?>
             </div>
+            <?php if ( ! is_admin() ) : ?>
             <input type="hidden" name="action" id="action" value="upload_group_cover"/>
+            <?php endif; ?>
 
 
         <?php

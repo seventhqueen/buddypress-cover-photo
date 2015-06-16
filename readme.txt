@@ -1,9 +1,9 @@
 === BuddyPress Cover Photo ===
 Contributors: seventhqueen
 Tags: BuddyPress, avatar, cover, members
-Requires at least: 4.0
+Requires at least: 4.1
 Tested up to: 4.2
-Stable tag: 1.1
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,10 @@ No. This plugin needs no configuration.
 
 
 == Changelog ==
+
+= 1.1.1 =
+- Fixed a BuddyPress Group editing issue from admin area as in: https://wordpress.org/support/topic/compatibility-problem-with-buddypress
+- Added html tag filter to hook into the background element if theme developers need to
 
 = 1.1 =
 - Added Group cover
