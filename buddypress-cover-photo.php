@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: BuddyPress Cover Photo
- * Version: 1.1
+ * Version: 1.1.1
  * Author: SeventhQueen
  * Author URI: http://seventhqueen.com
  * Plugin URI: http://seventhqueen.com
