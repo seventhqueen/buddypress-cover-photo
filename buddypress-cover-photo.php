@@ -2,14 +2,18 @@
 /*
 Plugin Name: BuddyPress Cover Photo
 Plugin URI: http://seventhqueen.com
-Description: Allows Users to upload Cover photo to their Profiles and Groups. Inspired by Brajesh Singh custom bg plugin
-Version: 1.1.2
+Description: Allows Users to upload Cover photo to their Profiles and Groups and define default photos for both sections.
+Version: 1.1.3
 Author: SeventhQueen
 Author URI: http://seventhqueen.com
 License: GPL
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Domain Path: /languages
 Text Domain: bpcp
+*/
+
+/*
+Based on initial work of Brajesh Singh custom background plugin
 */
 
 add_action( 'bp_include', 'sq_bp_cover_photo_init' );
