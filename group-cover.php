@@ -62,26 +62,26 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
         function add_cover () {
 
-            if ( ! is_user_logged_in() ) {
-                return;
-            }
-
-            $user_ID = get_current_user_id();
             $output = '';
 
-            if ( groups_is_user_mod( $user_ID, $this->group_id ) || groups_is_user_admin( $user_ID, $this->group_id ) ) {
-                if ( $this->get_cover() ) {
-                    $message = __("Change Cover", 'bpcp');
-                } else {
-                    $message = __("Add Cover", 'bpcp');
+            if ( is_user_logged_in() ) {
+
+                $user_ID = get_current_user_id();
+
+                if (groups_is_user_mod($user_ID, $this->group_id) || groups_is_user_admin($user_ID, $this->group_id)) {
+                    if ($this->get_cover()) {
+                        $message = __("Change Cover", 'bpcp');
+                    } else {
+                        $message = __("Add Cover", 'bpcp');
+                    }
+
+                    $group = groups_get_group(array('group_id' => $this->group_id));
+                    $group_permalink = trailingslashit(bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $group->slug . '/');
+
+                    $output .= '<div class="profile-cover-action">';
+                    $output .= '<a href="' . trailingslashit($group_permalink . 'admin') . $this->slug . '" class="button">' . $message . '</a>';
+                    $output .= '</div>';
                 }
-
-                $group = groups_get_group( array( 'group_id' => $this->group_id ) );
-                $group_permalink = trailingslashit( bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $group->slug . '/' );
-
-                $output .= '<div class="profile-cover-action">';
-                $output .= '<a href="' . trailingslashit( $group_permalink . 'admin' ) . $this->slug . '" class="button">' . $message . '</a>';
-                $output .= '</div>';
             }
 
             $default_cover = bp_get_option( 'bpcp-group-default' );

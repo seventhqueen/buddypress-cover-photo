@@ -3,7 +3,7 @@ Contributors: seventhqueen
 Tags: BuddyPress, avatar, cover, members, groups
 Requires at least: 4.1
 Tested up to: 4.2
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,10 @@ From WP admin - Settings - BuddyPress - Settings you can set default images for 
 
 
 == Changelog ==
+
+= 1.1.4 =
+- Change to the group cover tint inner layer to show also when the user isn't logged in. thanks @sharmstr
+- Updated translation files
 
 = 1.1.3 =
 - Some extra checks when saving just the position so it won't remove the existing image
