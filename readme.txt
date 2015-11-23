@@ -2,19 +2,17 @@
 Contributors: seventhqueen
 Tags: BuddyPress, avatar, cover, members, groups
 Requires at least: 4.1
-Tested up to: 4.2
-Stable tag: 1.1.4
+Tested up to: 4.4
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
-
-Enable your site users to add beautiful profile photo covers to their page.
-Admin user also can set covers for other users by visiting their profile.
-Group admin can set covers for Groups
-From WP admin - Settings - BuddyPress - Settings you can set default images for profile and groups.
-
-NEW: Version 1.1 is out and we added Groups covers and Default cover setting
+Updated to work with BuddyPress 2.4
+The plugins adds default Profile and Group cover settings in WP Admin - Settings - BuddyPress - Settings
+The default image settings works with BuddyPress 2.4 core functionality
+Since the cover functionality is included in Buddypress core since version 2.4, right now having the plugin active will use BP functionality and use the old uploaded image until you upload a new one with the new BP interface.
+The plugins screens are no longer used if you have BuddyPress greater than 2.4
 
 Check out this demo to see it in action: 
 http://seventhqueen.com/themes/kleo/members/kleoadmin/
@@ -38,6 +36,10 @@ From WP admin - Settings - BuddyPress - Settings you can set default images for 
 
 
 == Changelog ==
+
+= 1.2 =
+- Added fallback to Buddypress 2.4 core functionality for Profile/Group Cover. Right now having the plugin active will use BP functionality and use to the old uploaded image until you upload a new one with the new BP interface. The plugins screens are no longer users in BuddyPress 2.4 and we only kept the default image setttings in the WP Admin - Settings - Buddypress - Settings area
+- Added Catalan translation
 
 = 1.1.4 =
 - Change to the group cover tint inner layer to show also when the user isn't logged in. thanks @sharmstr

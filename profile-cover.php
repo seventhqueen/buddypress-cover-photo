@@ -44,6 +44,7 @@ class BPCoverPhoto {
 
     function add_profile_cover () {
 
+        global $bp;
         $output = '';
 
         if ( bp_is_my_profile() || is_super_admin() ) {
@@ -54,7 +55,7 @@ class BPCoverPhoto {
             }
 
             $output .= '<div class="profile-cover-action">';
-            $output .= '<a href="' . bp_displayed_user_domain() . 'profile/change-cover/" class="button">' . $message . '</a>';
+            $output .= '<a href="' . bp_displayed_user_domain() . $bp->profile->slug . '/change-cover/" class="button">' . $message . '</a>';
             $output .= '</div>';
         }
 
@@ -228,7 +229,8 @@ class BPCoverPhoto {
         if ( $default_cover ) {
             ?>
             <style type="text/css">
-                body.buddypress.bp-default-cover <?php echo $profile_cover_html_tag; ?> {
+                body.buddypress.bp-default-cover <?php echo $profile_cover_html_tag; ?>,
+                .bp-default-cover #buddypress <?php echo $profile_cover_html_tag; ?> {
                     background-image: url("<?php echo $default_cover; ?>");
                     background-repeat: no-repeat;
                     background-size: cover;
@@ -248,7 +250,8 @@ class BPCoverPhoto {
 
         ?>
         <style type="text/css">
-            body.buddypress.is-user-profile <?php echo $profile_cover_html_tag; ?> {
+            body.buddypress.is-user-profile <?php echo $profile_cover_html_tag; ?>,
+            .is-user-profile #buddypress <?php echo $profile_cover_html_tag; ?>{
                 background-image: url("<?php echo $image_url;?>");
                 background-repeat: no-repeat;
                 background-size: cover;
@@ -290,7 +293,7 @@ class BPCoverPhoto {
     }
 
     //reuse it
-    function delete_cover_for_user( $user_id = null ) {
+    static function delete_cover_for_user( $user_id = null ) {
 
         if ( ! $user_id ) {
             $user_id = bp_loggedin_user_id();

@@ -115,7 +115,8 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
             if ( $this->group_id > 0 && $default_cover ) {
                 ?>
                 <style type="text/css">
-                    body.buddypress.bp-default-cover <?php echo $group_cover_html_tag; ?> {
+                    body.buddypress.bp-default-cover <?php echo $group_cover_html_tag; ?>,
+                    .bp-default-cover #buddypress <?php echo $group_cover_html_tag; ?>{
                         background-image: url("<?php echo $default_cover; ?>");
                         background-repeat: no-repeat;
                         background-size: cover;
@@ -135,7 +136,8 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
             ?>
             <style type="text/css">
-                body.buddypress.is-user-profile <?php echo $group_cover_html_tag; ?> {
+                body.buddypress.is-user-profile <?php echo $group_cover_html_tag; ?>,
+                .is-user-profile #buddypress <?php echo $group_cover_html_tag; ?>{
                     background-image: url("<?php echo $image_url;?>");
                     background-repeat: no-repeat;
                     background-size: cover;
@@ -303,7 +305,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
          * @param null $group_id
          * @return bool|void
          */
-         function delete_cover( $group_id = null ) {
+         static function delete_cover( $group_id = null ) {
 
             if ( ! $group_id ) {
                 return false;
@@ -318,7 +320,9 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
             groups_delete_groupmeta( $group_id, 'bpcp_group_cover' );
         }
     }
-    bp_register_group_extension( 'BPCP_Group_Cover' );
+    if ( version_compare( BP_VERSION, '2.4', '<' ) ) {
+        bp_register_group_extension('BPCP_Group_Cover');
+    }
 
 endif; // if ( class_exists( 'BP_Group_Extension' ) )
 

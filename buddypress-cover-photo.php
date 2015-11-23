@@ -3,7 +3,7 @@
 Plugin Name: BuddyPress Cover Photo
 Plugin URI: http://seventhqueen.com
 Description: Allows Users to upload Cover photo to their Profiles and Groups and define default photos for both sections.
-Version: 1.1.4
+Version: 1.2
 Author: SeventhQueen
 Author URI: http://seventhqueen.com
 License: GPL
@@ -16,15 +16,92 @@ Text Domain: bpcp
 Based on initial work of Brajesh Singh custom background plugin
 */
 
-add_action( 'bp_include', 'sq_bp_cover_photo_init' );
+add_action( 'bp_include', 'sq_bp_cover_photo_init', 99 );
 function sq_bp_cover_photo_init()
 {
     if ( function_exists( 'bp_is_active' ) ) {
+
         include_once 'profile-cover.php';
         include_once 'group-cover.php';
 
-        $bp_cover_photo = new BPCoverPhoto();
+        if ( version_compare( BP_VERSION, '2.4', '<' ) ) {
+            $bp_cover_photo = new BPCoverPhoto();
+        } else {
+            /* hook into the ajax delete action to delete also the plugin cover */
+            add_action( 'wp_ajax_bp_cover_image_delete', 'bpcp_attachments_cover_image_ajax_delete', 9 );
+
+
+            add_filter( 'bp_before_groups_cover_image_settings_parse_args', 'bpcp_group_compat_cover_image', 10, 1 );
+            add_filter( 'bp_before_xprofile_cover_image_settings_parse_args', 'bpcp_profile_compat_cover_image', 10, 1 );
+
+        }
+
     }
+}
+
+
+function bpcp_profile_compat_cover_image( $settings = array() ) {
+
+    /* First try to get the image for the user if is any */
+    if ( bp_is_user() && bpcp_get_image(bp_displayed_user_id()) ) {
+        $default = bpcp_get_image(bp_displayed_user_id());
+    } else {
+        $default = bp_get_option('bpcp-profile-default');
+    }
+
+    if ( $default ) {
+        $settings['default_cover'] = $default;
+    }
+
+    return $settings;
+}
+
+function bpcp_group_compat_cover_image( $settings = array() ) {
+
+    $group_id = bp_get_current_group_id();
+
+    if ( groups_get_groupmeta( $group_id, 'bpcp_group_cover' ) ) {
+        $default = groups_get_groupmeta($group_id, 'bpcp_group_cover');
+    } else {
+        $default = bp_get_option('bpcp-group-default');
+    }
+
+    if ( $default ) {
+        $settings['default_cover'] = $default;
+    }
+
+    return $settings;
+}
+
+/**
+ * Ajax delete a cover image for a given object and item id.
+ *
+ * @since 1.2
+ *
+ */
+function bpcp_attachments_cover_image_ajax_delete()
+{
+    // Bail if not a POST action.
+    if ('POST' !== strtoupper($_SERVER['REQUEST_METHOD'])) {
+        wp_send_json_error();
+    }
+
+    $cover_image_data = $_POST;
+
+    if (empty($cover_image_data['object']) || empty($cover_image_data['item_id'])) {
+        wp_send_json_error();
+    }
+
+    // Check the nonce
+    check_admin_referer('bp_delete_cover_image', 'nonce');
+
+    if ( 'user' === $cover_image_data['object'] ) {
+
+        BPCoverPhoto::delete_cover_for_user($cover_image_data['item_id']);
+    } else {
+        BPCP_Group_Cover::delete_cover($cover_image_data['item_id']);
+    }
+
 }
 
 //load textdomain
