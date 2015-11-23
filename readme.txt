@@ -8,7 +8,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
-Updated to work with BuddyPress 2.4
+Updated to work with BuddyPress 2.4 and use core functionality.
 The plugins adds default Profile and Group cover settings in WP Admin - Settings - BuddyPress - Settings
 The default image settings works with BuddyPress 2.4 core functionality
 Since the cover functionality is included in Buddypress core since version 2.4, right now having the plugin active will use BP functionality and use the old uploaded image until you upload a new one with the new BP interface.
