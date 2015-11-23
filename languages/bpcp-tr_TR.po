@@ -1,0 +1,112 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: BuddyPress Kapak Fotoğrafı\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: Thu Jul 02 2015 17:16:25 GMT+0300 (EEST)\n"
+"PO-Revision-Date: 2015-08-23 15:58+0300\n"
+"Last-Translator: admin user <abe@seventhqueen.com>\n"
+"Language-Team: Utku Gürler <utku.gurler@hotmail.com>\n"
+"Language: tr\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-KeywordsList: _:1;gettext:1;dgettext:2;ngettext:1,2;dngettext:2,3;"
+"__:1;_e:1;_c:1;_n:1,2;_n_noop:1,2;_nc:1,2;__ngettext:1,2;"
+"__ngettext_noop:1,2;_x:1,2c;_ex:1,2c;_nx:1,2,4c;_nx_noop:1,2,3c;_n_js:1,2;"
+"_nx_js:1,2,3c;esc_attr__:1;esc_html__:1;esc_attr_e:1;esc_html_e:1;"
+"esc_attr_x:1,2c;esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;"
+"transChoice:1,2\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Loco-Target-Locale: en_US\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#. the title of your section
+#: ../buddypress-cover-photo.php:110
+msgid "Cover Photo Settings"
+msgstr "Kapak Fotoğrafı Ayarları"
+
+#. The title for your setting
+#: ../buddypress-cover-photo.php:125
+msgid "Default Profile Cover"
+msgstr "Varsayılan Profil Kapak Fotoğrafı"
+
+#. The title for your setting
+#: ../buddypress-cover-photo.php:157
+msgid "Default Group Cover"
+msgstr "Varsayılan Grup Kapak Fotoğrafı"
+
+#: ../buddypress-cover-photo.php:195
+msgid "Define a default profile or group cover image"
+msgstr "Bir varsayılan profil veya grup kapak resmi tanımla"
+
+#: ../group-cover.php:25
+msgid "Cover Photo"
+msgstr "Kapak Fotoğrafı"
+
+#: ../group-cover.php:73 ../profile-cover.php:51 ../profile-cover.php:77
+msgid "Change Cover"
+msgstr "Kapak Fotoğrafı Değiştir"
+
+#: ../group-cover.php:75 ../profile-cover.php:53
+msgid "Add Cover"
+msgstr "Kapak Fotoğrafı Ekle"
+
+#: ../group-cover.php:166 ../profile-cover.php:286
+msgid "Cover photo deleted successfully!"
+msgstr "Kapak fotoğrafı başarıyla silindi!"
+
+#: ../group-cover.php:207 ../profile-cover.php:143
+msgid "Delete"
+msgstr "Sil"
+
+#: ../group-cover.php:211
+msgid "If you want to change your group cover, please upload a new image."
+msgstr ""
+"Grup kapak fotoğrafınızı değiştirmek istiyorsanız,lütfen yeni bir fotoğraf "
+"ekleyiniz."
+
+#: ../group-cover.php:216 ../profile-cover.php:153
+msgid "Please choose your background repeat option"
+msgstr "Arka plan tekrar seçeneğini seçiniz"
+
+#: ../group-cover.php:227 ../profile-cover.php:160
+msgid "Center"
+msgstr "Merkez"
+
+#: ../group-cover.php:227 ../profile-cover.php:160
+msgid "Top"
+msgstr "Üst"
+
+#: ../group-cover.php:227 ../profile-cover.php:160
+msgid "Bottom"
+msgstr "Alt"
+
+#: ../group-cover.php:267 ../profile-cover.php:112
+msgid "Cover photo uploaded successfully!"
+msgstr "Kapak fotoğrafı başarıyla yüklendi!"
+
+#: ../group-cover.php:281 ../profile-cover.php:193
+#, php-format
+msgid "Upload Failed! Error was: %s"
+msgstr "Yükleme Başarısız!Hata oldu: %s"
+
+#: ../profile-cover.php:95
+msgid "Security check failed"
+msgstr "Güvenlik denetimi başarısız oldu"
+
+#: ../profile-cover.php:125
+msgid "Add/Update Your Profile Cover Image"
+msgstr "Profiline Kapak Fotoğrafı Ekle/Yükle "
+
+#: ../profile-cover.php:147
+msgid "If you want to change your profile cover, please upload a new image."
+msgstr ""
+"Profil kapak fotoğrafınızı değiştirmek istiyorsanız,lütfen yeni bir "
+"fotoğraf ekleyiniz."
+
+#: ../profile-cover.php:180
+msgid "Save"
+msgstr "Kaydet"
