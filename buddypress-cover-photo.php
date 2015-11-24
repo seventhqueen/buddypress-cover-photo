@@ -3,7 +3,7 @@
 Plugin Name: BuddyPress Cover Photo
 Plugin URI: http://seventhqueen.com
 Description: Allows Users to upload Cover photo to their Profiles and Groups and define default photos for both sections.
-Version: 1.2
+Version: 1.3
 Author: SeventhQueen
 Author URI: http://seventhqueen.com
 License: GPL
