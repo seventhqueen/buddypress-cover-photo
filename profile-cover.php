@@ -28,8 +28,16 @@ class BPCoverPhoto {
 
     //inject custom class for profile pages
     function get_body_class($classes){
-        if( bp_is_user() && bpcp_get_image() ) {
-            $classes[] = 'is-user-profile';
+        if( bp_is_user() ) {
+
+            $default_cover = bp_get_option( 'bpcp-profile-default' );
+            if ( $default_cover ) {
+                $classes[] = 'bp-default-cover';
+            }
+
+            if ( bpcp_get_image() || $default_cover ) {
+                $classes[] = 'is-user-profile';
+            }
         }
         return $classes;
     }
@@ -49,7 +57,10 @@ class BPCoverPhoto {
             $output .= '<a href="' . bp_displayed_user_domain() . 'profile/change-cover/" class="button">' . $message . '</a>';
             $output .= '</div>';
         }
-        if ( bpcp_get_image() ) {
+
+        $default_cover = bp_get_option( 'bpcp-profile-default' );
+
+        if ( bpcp_get_image() || $default_cover ) {
             $output .= '<div class="profile-cover-inner"></div>';
         }
 
@@ -205,8 +216,31 @@ class BPCoverPhoto {
 
     //inject css
     function inject_css() {
+
+        if( ! bp_is_user() ) {
+            return false;
+        }
+
+
+        /* Default cover check */
+        $default_cover = bp_get_option( 'bpcp-profile-default' );
+        if ( $default_cover ) {
+            ?>
+            <style type="text/css">
+                body.buddypress.bp-default-cover div#item-header {
+                    background-image: url("<?php echo $default_cover; ?>");
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    background-position: center center;
+                }
+            </style>
+
+        <?php
+        }
+
+        /* User cover */
         $image_url = bpcp_get_image();
-        if (empty($image_url) || apply_filters('bpcp_iwilldo_it_myself', false)) {
+        if ( empty( $image_url ) || apply_filters('bpcp_iwilldo_it_myself', false) ) {
             return;
         }
         $position = bpcp_get_image_position();

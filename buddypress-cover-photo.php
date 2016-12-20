@@ -89,3 +89,206 @@ Class BPCP_Utils {
     }
 
 }
+
+
+/**
+ * Your setting main function
+ */
+function bp_plugin_admin_settings() {
+
+    /* This is how you add a new section to BuddyPress settings */
+    add_settings_section(
+    /* the id of your new section */
+        'bpcp_section',
+
+        /* the title of your section */
+        __( 'Cover Photo Settings',  'bpcp' ),
+
+        /* the display function for your section's description */
+        'bpcp_setting_callback_section',
+
+        /* BuddyPress settings */
+        'buddypress'
+    );
+
+    /* Default Profile cover field */
+    add_settings_field(
+    /* the option name you want to use for your plugin */
+        'bpcp-profile-default',
+
+        /* The title for your setting */
+        __( 'Default Profile Cover', 'bpcp' ),
+
+        /* Display function */
+        'bpcp_profile_field_callback',
+
+        /* BuddyPress settings */
+        'buddypress',
+
+        /* Your plugins section id */
+        'bpcp_section'
+    );
+
+    /*
+       Register Profile default field setting
+    */
+    register_setting(
+    /* BuddyPress settings */
+        'buddypress',
+
+        /* the option name you want to use for your plugin */
+        'bpcp-profile-default',
+
+        /* the validation function you use before saving your option to the database */
+        'strval'
+    );
+
+    /* Default Group cover field */
+    add_settings_field(
+    /* the option name you want to use for your plugin */
+        'bpcp-group-default',
+
+        /* The title for your setting */
+        __( 'Default Group Cover', 'bpcp' ),
+
+        /* Display function */
+        'bpcp_group_field_callback',
+
+        /* BuddyPress settings */
+        'buddypress',
+
+        /* Your plugins section id */
+        'bpcp_section'
+    );
+
+    /*
+       Register Group default field setting
+    */
+    register_setting(
+    /* BuddyPress settings */
+        'buddypress',
+
+        /* the option name you want to use for your plugin */
+        'bpcp-group-default',
+
+        /* the validation function you use before saving your option to the database */
+        'strval'
+    );
+
+}
+
+/**
+ * You need to hook bp_register_admin_settings to register your settings
+ */
+add_action( 'bp_register_admin_settings', 'bp_plugin_admin_settings' );
+
+/**
+ * This is the display function for your section's description
+ */
+function bpcp_setting_callback_section() {
+    ?>
+    <p class="description"><?php _e( 'Define a default profile or group cover image', 'bpcp' );?></p>
+<?php
+}
+
+
+/**
+ * This is the display function for profile default cover
+ */
+function bpcp_profile_field_callback() {
+
+    /* if you use bp_get_option(), then you are sure to get the option for the blog BuddyPress is activated on */
+    $bp_plugin_option_value = bp_get_option( 'bpcp-profile-default' );
+
+    if (! $bp_plugin_option_value ) {
+        $bp_plugin_option_value = '';
+    }
+
+    // jQuery
+    wp_enqueue_script('jquery');
+    // This will enqueue the Media Uploader script
+    wp_enqueue_media();
+    ?>
+
+    <div>
+        <input type="text" name="bpcp-profile-default" id="bpcp-profile-default" value="<?php echo $bp_plugin_option_value; ?>" class="regular-text">
+        <input type="button" name="upload-btn" id="upload-btn2" class="button-secondary" value="Upload Image">
+    </div>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function($){
+            $('#upload-btn2').click(function(e) {
+                e.preventDefault();
+                var image = wp.media({
+                    title: 'Upload Image',
+                    // mutiple: true if you want to upload multiple files at once
+                    multiple: false
+                }).open()
+                    .on('select', function(e){
+                        // This will return the selected image from the Media Uploader, the result is an object
+                        var uploaded_image = image.state().get('selection').first();
+                        // We convert uploaded_image to a JSON object to make accessing it easier
+                        // Output to the console uploaded_image
+                        //console.log(uploaded_image);
+                        var image_url = uploaded_image.toJSON().url;
+                        // Let's assign the url value to the input field
+                        $('#bpcp-profile-default').val(image_url);
+                    });
+            });
+        });
+    </script>
+
+
+<?php
+}
+
+
+/**
+ * This is the display function for your field
+ */
+function bpcp_group_field_callback() {
+
+    /* if you use bp_get_option(), then you are sure to get the option for the blog BuddyPress is activated on */
+    $bp_plugin_option_value = bp_get_option( 'bpcp-group-default' );
+
+    if (! $bp_plugin_option_value ) {
+        $bp_plugin_option_value = '';
+    }
+
+    // jQuery
+    wp_enqueue_script('jquery');
+    // This will enqueue the Media Uploader script
+    wp_enqueue_media();
+    ?>
+
+    <div>
+        <input type="text" name="bpcp-group-default" id="bpcp-group-default" value="<?php echo $bp_plugin_option_value; ?>" class="regular-text">
+        <input type="button" name="upload-btn" id="upload-btn" class="button-secondary" value="Upload Image">
+    </div>
+
+    <script type="text/javascript">
+        jQuery(document).ready(function($){
+            $('#upload-btn').click(function(e) {
+                e.preventDefault();
+                var image = wp.media({
+                    title: 'Upload Image',
+                    // mutiple: true if you want to upload multiple files at once
+                    multiple: false
+                }).open()
+                    .on('select', function(e){
+                        // This will return the selected image from the Media Uploader, the result is an object
+                        var uploaded_image = image.state().get('selection').first();
+                        // We convert uploaded_image to a JSON object to make accessing it easier
+                        // Output to the console uploaded_image
+                        //console.log(uploaded_image);
+                        var image_url = uploaded_image.toJSON().url;
+                        // Let's assign the url value to the input field
+                        $('#bpcp-group-default').val(image_url);
+                    });
+            });
+        });
+    </script>
+
+
+<?php
+}
