@@ -62,26 +62,26 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
         function add_cover () {
 
-            if ( ! is_user_logged_in() ) {
-                return;
-            }
-
-            $user_ID = get_current_user_id();
             $output = '';
 
-            if ( groups_is_user_mod( $user_ID, $this->group_id ) || groups_is_user_admin( $user_ID, $this->group_id ) ) {
-                if ( $this->get_cover() ) {
-                    $message = __("Change Cover", 'bpcp');
-                } else {
-                    $message = __("Add Cover", 'bpcp');
+            if ( is_user_logged_in() ) {
+
+                $user_ID = get_current_user_id();
+
+                if (groups_is_user_mod($user_ID, $this->group_id) || groups_is_user_admin($user_ID, $this->group_id)) {
+                    if ($this->get_cover()) {
+                        $message = __("Change Cover", 'bpcp');
+                    } else {
+                        $message = __("Add Cover", 'bpcp');
+                    }
+
+                    $group = groups_get_group(array('group_id' => $this->group_id));
+                    $group_permalink = trailingslashit(bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $group->slug . '/');
+
+                    $output .= '<div class="profile-cover-action">';
+                    $output .= '<a href="' . trailingslashit($group_permalink . 'admin') . $this->slug . '" class="button">' . $message . '</a>';
+                    $output .= '</div>';
                 }
-
-                $group = groups_get_group( array( 'group_id' => $this->group_id ) );
-                $group_permalink = trailingslashit( bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $group->slug . '/' );
-
-                $output .= '<div class="profile-cover-action">';
-                $output .= '<a href="' . trailingslashit( $group_permalink . 'admin' ) . $this->slug . '" class="button">' . $message . '</a>';
-                $output .= '</div>';
             }
 
             $default_cover = bp_get_option( 'bpcp-group-default' );
@@ -108,13 +108,15 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
         //inject css
         function inject_css() {
 
+            $group_cover_html_tag = apply_filters( 'bpcp_group_tag', 'div#item-header' );
+
             /* Default cover check */
             $default_cover = bp_get_option( 'bpcp-group-default' );
             if ( $this->group_id > 0 && $default_cover ) {
-                $group_cover_html_tag = apply_filters( 'bpcp_group_tag', 'div#item-header' );
                 ?>
                 <style type="text/css">
-                    body.buddypress.bp-default-cover <?php echo $group_cover_html_tag; ?> {
+                    body.buddypress.bp-default-cover <?php echo $group_cover_html_tag; ?>,
+                    .bp-default-cover #buddypress <?php echo $group_cover_html_tag; ?>{
                         background-image: url("<?php echo $default_cover; ?>");
                         background-repeat: no-repeat;
                         background-size: cover;
@@ -134,7 +136,8 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
             ?>
             <style type="text/css">
-                body.buddypress.is-user-profile div#item-header {
+                body.buddypress.is-user-profile <?php echo $group_cover_html_tag; ?>,
+                .is-user-profile #buddypress <?php echo $group_cover_html_tag; ?>{
                     background-image: url("<?php echo $image_url;?>");
                     background-repeat: no-repeat;
                     background-size: cover;
@@ -261,7 +264,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
             }
 
             /* Handle the file upload */
-            if ( isset( $_FILES['bpcp_group_cover'] ) ) {
+            if ( isset( $_FILES['bpcp_group_cover']) && $_FILES['bpcp_group_cover']['name'] != '' ) {
                 if ( $this->handle_upload( 'bpcp_group_cover', 'upload_group_cover' ) ) {
                     bp_core_add_message(__('Cover photo uploaded successfully!', 'bpcp'));
                     @setcookie('bp-message', false, time() - 1000, COOKIEPATH);
