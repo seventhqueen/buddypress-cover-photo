@@ -1,16 +1,18 @@
 === BuddyPress Cover Photo ===
 Contributors: seventhqueen
-Tags: BuddyPress, avatar, cover, members
+Tags: BuddyPress, avatar, cover, members, groups
 Requires at least: 4.1
 Tested up to: 4.2
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-Enable your site users to add beautiful profile photo covers to their page. 
-Admin user also can set covers for other users by visiting their profile. 
+Enable your site users to add beautiful profile photo covers to their page.
+Admin user also can set covers for other users by visiting their profile.
+Group admin can set covers for Groups
+From WP admin - Settings - BuddyPress - Settings you can set default images for profile and groups.
 
 NEW: Version 1.1 is out and we added Groups covers and Default cover setting
 
@@ -31,8 +33,15 @@ http://seventhqueen.com/themes/kleo/members/kleoadmin/
 = What other configurations do I need =
 No. This plugin needs no configuration.
 
+= How do I set up default cover images =
+From WP admin - Settings - BuddyPress - Settings you can set default images for profile and groups.
+
 
 == Changelog ==
+
+= 1.1.3 =
+- Some extra checks when saving just the position so it won't remove the existing image
+- Some fixes to allow other themes to filter the backround html tag
 
 = 1.1.2 =
 - Fixed header info section of the plugin that was causing some install problems

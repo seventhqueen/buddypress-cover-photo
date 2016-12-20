@@ -90,9 +90,9 @@ class BPCoverPhoto {
     function screen_change_cover() {
         global $bp;
         //if the form was submitted, update here
-        if (!empty($_POST['bpcp_save_submit'])) {
-            if (!wp_verify_nonce($_POST['_wpnonce'], 'bp_upload_profile_cover')) {
-                die(__('Security check failed', 'bpcp'));
+        if ( ! empty($_POST['bpcp_save_submit']) ) {
+            if ( ! wp_verify_nonce($_POST['_wpnonce'], 'bp_upload_profile_cover') ) {
+                die( __('Security check failed', 'bpcp') );
             }
 
             $current_option = $_POST['cover_pos'];
@@ -108,7 +108,7 @@ class BPCoverPhoto {
             }
 
             //handle the upload
-            if ($this->handle_upload()) {
+            if (isset($_FILES['file']) && $_FILES['file']['name'] != '' && $this->handle_upload()) {
                 bp_core_add_message(__('Cover photo uploaded successfully!', 'bpcp'));
                 @setcookie( 'bp-message', false, time() - 1000, COOKIEPATH );
             }
@@ -221,11 +221,11 @@ class BPCoverPhoto {
             return false;
         }
 
+        $profile_cover_html_tag = apply_filters( 'bpcp_profile_tag', 'div#item-header' );
 
         /* Default cover check */
         $default_cover = bp_get_option( 'bpcp-profile-default' );
         if ( $default_cover ) {
-            $profile_cover_html_tag = apply_filters( 'bpcp_group_tag', 'div#item-header' );
             ?>
             <style type="text/css">
                 body.buddypress.bp-default-cover <?php echo $profile_cover_html_tag; ?> {
@@ -248,7 +248,7 @@ class BPCoverPhoto {
 
         ?>
         <style type="text/css">
-            body.buddypress.is-user-profile div#item-header {
+            body.buddypress.is-user-profile <?php echo $profile_cover_html_tag; ?> {
                 background-image: url("<?php echo $image_url;?>");
                 background-repeat: no-repeat;
                 background-size: cover;
