@@ -1,15 +1,16 @@
 <?php
-/**
- * Plugin Name: BuddyPress Cover Photo
- * Version: 1.1.1
- * Author: SeventhQueen
- * Author URI: http://seventhqueen.com
- * Plugin URI: http://seventhqueen.com
- * Inspired by Brajesh Singh - https://github.com/sbrajesh/bp-custom-background-for-user-profile
- * License: GPL 
- * 
- * Description: Allows Users to upload Cover photo to their profiles and to Groups
- */
+/*
+Plugin Name: BuddyPress Cover Photo
+Plugin URI: http://seventhqueen.com
+Description: Allows Users to upload Cover photo to their Profiles and Groups. Inspired by Brajesh Singh custom bg plugin
+Version: 1.1.1
+Author: SeventhQueen
+Author URI: http://seventhqueen.com
+License: GPL
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Domain Path: /languages
+Text Domain: bpcp
+*/
 
 add_action( 'bp_include', 'sq_bp_cover_photo_init' );
 function sq_bp_cover_photo_init()
