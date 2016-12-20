@@ -33,6 +33,10 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
             );
             parent::init( $args );
 
+            function bpcp_remove_theme_group_cover_link() {
+                remove_action('bp_before_group_header', 'kleo_bp_group_cover_html', 20);
+            }
+            add_action( 'after_setup_theme', 'bpcp_remove_theme_group_cover_link', 99 );
             add_action( 'bp_before_group_header', array( $this, 'add_cover' ), 20 );
 
             //inject custom css class to body
