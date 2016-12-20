@@ -3,7 +3,7 @@
 Plugin Name: BuddyPress Cover Photo
 Plugin URI: http://seventhqueen.com
 Description: Allows Users to upload Cover photo to their Profiles and Groups and define default photos for both sections.
-Version: 1.2
+Version: 1.3.1
 Author: SeventhQueen
 Author URI: http://seventhqueen.com
 License: GPL
@@ -19,13 +19,28 @@ Based on initial work of Brajesh Singh custom background plugin
 add_action( 'bp_include', 'sq_bp_cover_photo_init', 99 );
 function sq_bp_cover_photo_init()
 {
+
+    $bpcp_enabled = bp_get_option('bpcp-enabled');
+
     if ( function_exists( 'bp_is_active' ) ) {
 
         include_once 'profile-cover.php';
         include_once 'group-cover.php';
 
-        if ( version_compare( BP_VERSION, '2.4', '<' ) ) {
+        if ( $bpcp_enabled || version_compare( BP_VERSION, '2.4', '<' ) ) {
             $bp_cover_photo = new BPCoverPhoto();
+
+            // For members :
+            add_filter( 'bp_is_profile_cover_image_active', '__return_false' );
+
+            // For groups :
+            add_filter( 'bp_is_groups_cover_image_active', '__return_false' );
+
+            function bpcp_cover_images_no_support() {
+                remove_action( 'bp_after_setup_theme', 'bp_register_theme_compat_default_features', 10 );
+            }
+            add_action( 'after_setup_theme', 'bpcp_cover_images_no_support' );
+
         } else {
             /* hook into the ajax delete action to delete also the plugin cover */
             add_action( 'wp_ajax_bp_cover_image_delete', 'bpcp_attachments_cover_image_ajax_delete', 9 );
@@ -196,6 +211,24 @@ function bp_plugin_admin_settings() {
     /* Default Profile cover field */
     add_settings_field(
     /* the option name you want to use for your plugin */
+        'bpcp-enabled',
+
+        /* The title for your setting */
+        __( 'Replace BP 2.4 functionality', 'bpcp' ),
+
+        /* Display function */
+        'bpcp_enabled_field_callback',
+
+        /* BuddyPress settings */
+        'buddypress',
+
+        /* Your plugins section id */
+        'bpcp_section'
+    );
+
+    /* Default Profile cover field */
+    add_settings_field(
+    /* the option name you want to use for your plugin */
         'bpcp-profile-default',
 
         /* The title for your setting */
@@ -272,6 +305,28 @@ function bpcp_setting_callback_section() {
     <p class="description"><?php _e( 'Define a default profile or group cover image', 'bpcp' );?></p>
 <?php
 }
+
+
+/**
+ * This is the display function for bpcp enabling functionality
+ */
+function bpcp_enabled_field_callback() {
+
+    /* if you use bp_get_option(), then you are sure to get the option for the blog BuddyPress is activated on */
+    $bp_plugin_option_value = bp_get_option( 'bpcp-enabled' );
+
+    if (! $bp_plugin_option_value ) {
+        $bp_plugin_option_value = '';
+    }
+    ?>
+
+    <div>
+        <input type="checkbox" name="bpcp-enabled" id="bpcp-enabled" <?php checked( $bp_plugin_option_value, 1 );?> value="1">
+        Leave BP Cover plugin functionality instead of BP 2.4 core
+    </div>
+    <?php
+}
+
 
 
 /**
