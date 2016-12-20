@@ -46,7 +46,15 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
         //inject custom class for profile pages
         function get_body_class( $classes ){
-            if( $this->get_cover() ) {
+
+            $default_cover = bp_get_option( 'bpcp-group-default' );
+            if( $this->group_id > 0 ) {
+                if ( $default_cover ) {
+                    $classes[] = 'bp-default-cover';
+                }
+            }
+
+            if( $this->get_cover() || $default_cover ) {
                 $classes[] = 'is-user-profile';
             }
             return $classes;
@@ -76,7 +84,9 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
                 $output .= '</div>';
             }
 
-            if ( $this->get_cover() ) {
+            $default_cover = bp_get_option( 'bpcp-group-default' );
+
+            if ( $this->get_cover() || $default_cover ) {
                 $output .= '<div class="profile-cover-inner"></div>';
             }
 
@@ -97,6 +107,24 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
         //inject css
         function inject_css() {
+
+            /* Default cover check */
+            $default_cover = bp_get_option( 'bpcp-group-default' );
+            if ( $this->group_id > 0 && $default_cover ) {
+                $group_cover_html_tag = apply_filters( 'bpcp_group_tag', 'div#item-header' );
+                ?>
+                <style type="text/css">
+                    body.buddypress.bp-default-cover <?php echo $group_cover_html_tag; ?> {
+                        background-image: url("<?php echo $default_cover; ?>");
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        background-position: center center;
+                    }
+                </style>
+
+            <?php
+            }
+
             $image_url = $this->get_cover();
             if ( empty ( $image_url ) ) {
                 return;
@@ -207,7 +235,9 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
                 ?>
             </div>
+            <?php if ( ! is_admin() ) : ?>
             <input type="hidden" name="action" id="action" value="upload_group_cover"/>
+            <?php endif; ?>
 
 
         <?php
