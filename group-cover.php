@@ -11,7 +11,7 @@
  * The class_exists() check is recommended, to prevent problems during upgrade
  * or when the Groups component is disabled
  */
-if ( class_exists( 'BP_Group_Extension' ) ) :
+if ( class_exists( 'BP_Group_Extension' ) && bp_is_active('groups') ) :
 
     class BPCP_Group_Cover extends BP_Group_Extension {
 
