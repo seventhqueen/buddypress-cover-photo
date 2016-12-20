@@ -225,9 +225,10 @@ class BPCoverPhoto {
         /* Default cover check */
         $default_cover = bp_get_option( 'bpcp-profile-default' );
         if ( $default_cover ) {
+            $profile_cover_html_tag = apply_filters( 'bpcp_group_tag', 'div#item-header' );
             ?>
             <style type="text/css">
-                body.buddypress.bp-default-cover div#item-header {
+                body.buddypress.bp-default-cover <?php echo $profile_cover_html_tag; ?> {
                     background-image: url("<?php echo $default_cover; ?>");
                     background-repeat: no-repeat;
                     background-size: cover;
