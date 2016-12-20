@@ -14,6 +14,10 @@ class BPCoverPhoto {
         //setup nav
         add_action( 'bp_xprofile_setup_nav', array( $this, 'setup_nav' ) );
 
+        function bpcp_remove_theme_profile_cover_link() {
+            remove_action('bp_before_member_header', 'kleo_bp_cover_html', 20);
+        }
+        add_action( 'after_setup_theme', 'bpcp_remove_theme_profile_cover_link', 99 );
         add_action( 'bp_before_member_header', array( $this, 'add_profile_cover' ), 20 );
 
         //inject custom css class to body
