@@ -293,7 +293,7 @@ class BPCoverPhoto {
     }
 
     //reuse it
-    function delete_cover_for_user( $user_id = null ) {
+    static function delete_cover_for_user( $user_id = null ) {
 
         if ( ! $user_id ) {
             $user_id = bp_loggedin_user_id();
