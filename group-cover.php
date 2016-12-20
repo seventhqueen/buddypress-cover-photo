@@ -115,7 +115,8 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
             if ( $this->group_id > 0 && $default_cover ) {
                 ?>
                 <style type="text/css">
-                    body.buddypress.bp-default-cover <?php echo $group_cover_html_tag; ?> {
+                    body.buddypress.bp-default-cover <?php echo $group_cover_html_tag; ?>,
+                    .bp-default-cover #buddypress <?php echo $group_cover_html_tag; ?>{
                         background-image: url("<?php echo $default_cover; ?>");
                         background-repeat: no-repeat;
                         background-size: cover;
@@ -135,7 +136,8 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
 
             ?>
             <style type="text/css">
-                body.buddypress.is-user-profile <?php echo $group_cover_html_tag; ?> {
+                body.buddypress.is-user-profile <?php echo $group_cover_html_tag; ?>,
+                .is-user-profile #buddypress <?php echo $group_cover_html_tag; ?>{
                     background-image: url("<?php echo $image_url;?>");
                     background-repeat: no-repeat;
                     background-size: cover;
