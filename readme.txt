@@ -37,6 +37,9 @@ From WP admin - Settings - BuddyPress - Settings you can set default images for 
 
 == Changelog ==
 
+= 1.5 =
+Plugin is now properly prepared for localization so it can get automattic translation updates trough WordPress https://translate.wordpress.org
+
 = 1.4.1 =
 - BuddyPress 2.6 compatibility added
 
