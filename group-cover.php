@@ -305,7 +305,7 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
          * @param null $group_id
          * @return bool|void
          */
-         function delete_cover( $group_id = null ) {
+         static function delete_cover( $group_id = null ) {
 
             if ( ! $group_id ) {
                 return false;
@@ -320,7 +320,9 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
             groups_delete_groupmeta( $group_id, 'bpcp_group_cover' );
         }
     }
-    bp_register_group_extension( 'BPCP_Group_Cover' );
+    if ( version_compare( BP_VERSION, '2.4', '<' ) ) {
+        bp_register_group_extension('BPCP_Group_Cover');
+    }
 
 endif; // if ( class_exists( 'BP_Group_Extension' ) )
 
